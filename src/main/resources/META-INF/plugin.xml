@@ -1,0 +1,43 @@
+<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN, cannot be changed between the plugin versions. -->
+    <id>com.sendtralstation.remoteRunner</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>Remote Runner</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://www.sendtralstation.com">SendtralStation</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        <p>Remote Runner exposes your open IntelliJ projects' run configurations through the IDE's built-in web server. List configurations as JSON, filter by project name or path, and start a configuration remotely. The plugin uses the server port configured in the IDE (63342 by default <b>Tools | Web Browsers and Preview | Built-in Server | Port</b>); it does not open a separate port.</p>
+        <h3>API endpoints</h3>
+        <ul>
+            <li><code>GET /api/run/configurations</code>: list configurations. Add <code>?project=&lt;project-name-or-path&gt;</code> to filter.</li>
+            <li><code>POST /api/run/configurations/run?name=&lt;configuration-name&gt;</code>: start a configuration. Add <code>&amp;project=&lt;project-name-or-path&gt;</code> to select a project when needed. Returns <code>202 Accepted</code> when the configuration is queued to run.</li>
+        </ul>
+        <h3>Examples</h3>
+        <p>List configurations:</p>
+        <pre>curl "http://localhost:63342/api/run/configurations"</pre>
+        <p>List configurations for a project:</p>
+        <pre>curl --get --data-urlencode "project=my-project" "http://localhost:63342/api/run/configurations"</pre>
+        <p>Start a run configuration:</p>
+        <pre>curl --get --request POST --data-urlencode "name=My Run Configuration" "http://localhost:63342/api/run/configurations/run"</pre>
+        <p>Start one in a specific project:</p>
+        <pre>curl --get --request POST --data-urlencode "name=My Run Configuration" --data-urlencode "project=my-project" "http://localhost:63342/api/run/configurations/run"</pre>
+        <p>Replace port <code>63342</code> if the built-in web server is configured to use another port.</p>
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extensions defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <httpRequestHandler implementation="com.sendtralstation.remoterunner.RunConfigurationsRequestHandler"/>
+    </extensions>
+</idea-plugin>
